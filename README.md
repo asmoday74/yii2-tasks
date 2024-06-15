@@ -29,7 +29,7 @@ To add a module to the project, add the following data in your configuration fil
     'modules' => [
         ...
         'tasks' => [
-            'class' => 'фыьщвфн74\tasks\Module'
+            'class' => 'asmoday74\tasks\Module'
         ],
         ...
     ],
