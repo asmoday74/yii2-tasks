@@ -13,6 +13,8 @@
     "require": {
         "php": ">=8.2",
         "ext-json": "*",
+        "ext-posix": "*",
+        "ext-pcntl": "*",
         "yiisoft/yii2": "^2.0.42",
         "yiisoft/yii2-bootstrap5": "~2.0.4",
         "asmoday74/yii2-adminlte3": "~0.1.3"
