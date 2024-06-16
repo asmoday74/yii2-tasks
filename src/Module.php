@@ -39,22 +39,24 @@ class Module extends \yii\base\Module
      */
     public function registerTranslations()
     {
-        Yii::$app->i18n->translations['app/modules/tasks/*'] = [
+        Yii::$app->i18n->translations['asmoday74/tasks'] = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en-US',
             'basePath'       => '@vendor/asmoday74/yii2-tasks/src/messages',
+            'fileMap'        => [
+                'asmoday74/tasks' => 'tasks.php',
+            ],
         ];
     }
 
     /**
-     * Public translation function, Module::t('app/modules/tasks', 'Hello');
+     * Public translation function, Module::t('asmoday74/tasks', 'Hello');
      * @return string of current message translation
      */
     public static function t($category, $message, $params = [], $language = null)
     {
-        return Module::t('app/modules/tasks/'. $category, $message, $params, $language);
+        return Yii::t('asmoday74/' . $category, $message, $params, $language);
     }
-
 
     protected function defaultVersion()
     {
