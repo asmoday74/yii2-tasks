@@ -15,7 +15,7 @@ class Module extends \yii\base\Module
     /**
      * {@inheritdoc}
      */
-    public $defaultRoute = "task";
+    public $defaultRoute = "list";
 
     /**
      * @var string, the name of module

@@ -72,10 +72,11 @@ return [
     "View" => "Просмотр",
     "Delete" => "Удалить",
     "Are you sure you want to delete this item?" => "Вы уверены, что желаете удалить этот элемент?",
-
-
-
-
+    "Select the operation you want to perform:\n" => "Выберите операцию, которую вы хотите выполнить:\n",
+    "  1) Apply all module migrations\n" => "  1) Применить все миграции модуля\n",
+    "  2) Revert all module migrations\n\n" => "  2) Отменить все миграции модуля\n\n",
+    "Your choice: " => "Выш выбор: ",
+    "Error! Your selection has not been recognized.\n\n" => "Ошибка! Ваш выбор не распознан.\n\n",
 ];
 
 

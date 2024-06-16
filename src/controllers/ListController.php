@@ -15,7 +15,7 @@ use asmoday74\tasks\Module;
 /**
  * TaskController implements the CRUD actions for Task model.
  */
-class TaskController extends Controller
+class ListController extends Controller
 {
 
     /**
