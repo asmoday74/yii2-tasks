@@ -9,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use asmoday74\tasks\models\Task;
 use asmoday74\tasks\models\TaskLog;
 use yii\db\Expression;
+use asmoday74\tasks\Module;
 
 
 class RunController extends Controller
@@ -44,13 +45,13 @@ class RunController extends Controller
                         );
                         TaskHelper::taskLog(
                             $task['id'],
-                            Yii::t("tasks", "An unexpected termination of the task process occurred, the task status is reset. Attempt #{0}", ($task['launch_count'] + 1)),
+                            Module::t("tasks", "An unexpected termination of the task process occurred, the task status is reset. Attempt #{0}", ($task['launch_count'] + 1)),
                             TaskLog::TASK_LOG_MESSAGE_WARNING
                         );
                     } catch (\yii\db\Exception $e) {
                         TaskHelper::taskLog(
                             $task['id'],
-                            Yii::t("tasks", "An error occurred while trying to update task status.\n{0}", $e->getMessage()),
+                            Module::t("tasks", "An error occurred while trying to update task status.\n{0}", $e->getMessage()),
                             TaskLog::TASK_LOG_MESSAGE_ERROR
                         );
                     }
@@ -69,7 +70,7 @@ class RunController extends Controller
 
                 TaskHelper::taskLog(
                     $this->taskID,
-                    Yii::t("tasks", "The task has been accepted for processing")
+                    Module::t("tasks", "The task has been accepted for processing")
                 );
 
                 $startJob = time();
@@ -101,7 +102,7 @@ class RunController extends Controller
                 if ($pid_fork === -1) {
                     TaskHelper::taskLog(
                         $this->taskID,
-                        Yii::t("tasks", "Fork creation is not possible, the task is executed in single-threaded mode without timeout limitation"),
+                        Module::t("tasks", "Fork creation is not possible, the task is executed in single-threaded mode without timeout limitation"),
                         TaskLog::TASK_LOG_MESSAGE_WARNING
                     );
                     $this->executeJob($job_params, $jobInfo);
@@ -110,7 +111,7 @@ class RunController extends Controller
                     while ($job_pid === 0) {
                         if (($jobInfo->max_execution_time > 0) && ((time() - $startJob) > $jobInfo->max_execution_time)) {
                             posix_kill($pid_fork, SIGKILL);
-                            throw new \Exception(Yii::t("tasks", "The task was terminated due to a timeout"));
+                            throw new \Exception(Module::t("tasks", "The task was terminated due to a timeout"));
                         }
                         $job_pid = pcntl_wait($status, WNOHANG);
                     }
@@ -132,14 +133,14 @@ class RunController extends Controller
                 $execution_time = time() - $startJob;
                 TaskHelper::taskLog(
                     $this->taskID,
-                     Yii::t("tasks", "Task completed successfully. Time spent: {n, duration}",['n' => $execution_time])
+                     Module::t("tasks", "Task completed successfully. Time spent: {n, duration}",['n' => $execution_time])
                 );
                 $jobInfo->execution_time = $execution_time;
             } catch (\Exception $e) {
                 $jobInfo->status = Task::TASK_STATUS_UNSUCCESSFULLY;
                 TaskHelper::taskLog(
                     $this->taskID,
-                    Yii::t("tasks", "An error occurred while executing the task: \n{0}", $e->getMessage()),
+                    Module::t("tasks", "An error occurred while executing the task: \n{0}", $e->getMessage()),
                     TaskLog::TASK_LOG_MESSAGE_ERROR
                 );
             } finally {
@@ -156,18 +157,18 @@ class RunController extends Controller
             $job = Yii::createObject($jobParams);
             TaskHelper::taskLog(
                 $this->taskID,
-                Yii::t("tasks", "Task class created: {0}", get_class($job)),
+                Module::t("tasks", "Task class created: {0}", get_class($job)),
                 TaskLog::TASK_LOG_MESSAGE_DEBUG
             );
             TaskHelper::taskLog(
                 $this->taskID,
-                ($jobInfo->launch_count > 1) ? Yii::t("tasks", "The task has started") : Yii::t("tasks", "Task execution started. Attempt #{0}", $jobInfo->launch_count),
+                ($jobInfo->launch_count > 1) ? Module::t("tasks", "The task has started") : Module::t("tasks", "Task execution started. Attempt #{0}", $jobInfo->launch_count),
             );
             $job->execute();
         } catch (\Exception $e) {
             TaskHelper::taskLog(
                 $this->taskID,
-                Yii::t("tasks", "An error occurred while executing the task: \n{0}", $e->getMessage()),
+                Module::t("tasks", "An error occurred while executing the task: \n{0}", $e->getMessage()),
                 TaskLog::TASK_LOG_MESSAGE_ERROR
             );
         }

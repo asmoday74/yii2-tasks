@@ -2,10 +2,10 @@
 
 namespace asmoday74\tasks\models;
 
-use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\helpers\ArrayHelper;
+use asmoday74\tasks\Module;
 
 /**
  * This is the model class for table "task_log".
@@ -67,11 +67,11 @@ class TaskLog extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'            => Yii::t("tasks","ID"),
-            'task_id'       => Yii::t("tasks","Task ID"),
-            'message'       => Yii::t("tasks","Message"),
-            'created_at'    => Yii::t("tasks","Created"),
-            'type'          => Yii::t("tasks","Type"),
+            'id'            => Module::t("tasks","ID"),
+            'task_id'       => Module::t("tasks","Task ID"),
+            'message'       => Module::t("tasks","Message"),
+            'created_at'    => Module::t("tasks","Created"),
+            'type'          => Module::t("tasks","Type"),
         ];
     }
 
@@ -88,10 +88,10 @@ class TaskLog extends \yii\db\ActiveRecord
     public static function getMessageTypes()
     {
         return [
-            self::TASK_LOG_MESSAGE_DEBUG    => \Yii::t("tasks", "Debug"),
-            self::TASK_LOG_MESSAGE_INFO     => \Yii::t("tasks", "Information"),
-            self::TASK_LOG_MESSAGE_WARNING  => \Yii::t("tasks", "Warning"),
-            self::TASK_LOG_MESSAGE_ERROR    => \Yii::t("tasks", "Error")
+            self::TASK_LOG_MESSAGE_DEBUG    => Module::t("tasks", "Debug"),
+            self::TASK_LOG_MESSAGE_INFO     => Module::t("tasks", "Information"),
+            self::TASK_LOG_MESSAGE_WARNING  => Module::t("tasks", "Warning"),
+            self::TASK_LOG_MESSAGE_ERROR    => Module::t("tasks", "Error")
         ];
     }
 }

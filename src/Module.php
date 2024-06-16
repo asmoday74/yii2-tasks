@@ -27,29 +27,34 @@ class Module extends \yii\base\Module
      */
     public $description = "Task manager for Yii2";
 
-    /**
-     * @var string the module version
-     */
-    private $version = "1.0.0";
-
     public function init()
     {
         parent::init();
 
-        // Set version of current module
-        $this->setVersion($this->version);
-
         $this->registerTranslations();
     }
 
+    /**
+     * Registers translations for module
+     */
     public function registerTranslations()
     {
-        Yii::$app->i18n->translations['modules/tasks/*'] = [
+        Yii::$app->i18n->translations['app/modules/tasks/*'] = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en-US',
-            'basePath'       => '@vendor/asmoday74/tasks/messages',
+            'basePath'       => '@vendor/asmoday74/yii2-tasks/src/messages',
         ];
     }
+
+    /**
+     * Public translation function, Module::t('app/modules/tasks', 'Hello');
+     * @return string of current message translation
+     */
+    public static function t($category, $message, $params = [], $language = null)
+    {
+        return Module::t('app/modules/tasks/'. $category, $message, $params, $language);
+    }
+
 
     protected function defaultVersion()
     {

@@ -46,5 +46,5 @@ And select the operation "**Apply all module migrations**"
 or execute
 
 ```
-php yii migrate --migrationPath=@vendor/asmoday74/yii2-tasks/migrations
+php yii migrate --migrationPath=@vendor/asmoday74/yii2-tasks/src/migrations
 ```

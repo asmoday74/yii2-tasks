@@ -10,6 +10,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use asmoday74\tasks\Module;
 
 /**
  * TaskController implements the CRUD actions for Task model.
@@ -171,6 +172,6 @@ class TaskController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t("tasks", "The requested page does not exist"));
+        throw new NotFoundHttpException(Module::t("tasks", "The requested page does not exist"));
     }
 }

@@ -7,6 +7,7 @@ use yii\behaviors\AttributeBehavior;
 use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use asmoday74\tasks\Module;
 
 /**
  * This is the model class for table "task".
@@ -270,27 +271,27 @@ class Task extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'                    => Yii::t("tasks", 'ID'),
-            'name'                  => Yii::t("tasks", "Name"),
-            'command_type'          => Yii::t("tasks", "Command type"),
-            'command_params'        => Yii::t("tasks", "Parameters"),
-            'command'               => Yii::t("tasks", "Command"),
-            'priority'              => Yii::t("tasks", "Priority"),
-            'status'                => Yii::t("tasks", "Status"),
-            'schedule_type'         => Yii::t("tasks", "Launch type"),
-            'date_start'            => Yii::t("tasks", "Launch date"),
-            'time_start'            => Yii::t("tasks", "Launch time"),
-            'period'                => Yii::t("tasks", "Launch frequency"),
-            'time_launch'           => Yii::t("tasks", "Interval"),
-            'day_launch'            => Yii::t("tasks", "Launch days"),
-            'max_execution_time'    => Yii::t("tasks", "Maximum execution time"),
-            'launch_count'          => Yii::t("tasks", "Number of runs"),
-            'max_restarts_count'    => Yii::t("tasks", "Maximum number of runs"),
-            'last_run_at'           => Yii::t("tasks", "Last run in"),
-            'pid'                   => Yii::t("tasks", "Workflow PID"),
-            'execution_time'        => Yii::t("tasks", "Task execution time"),
-            'created_at'            => Yii::t("tasks", "Created"),
-            'updated_at'            => Yii::t("tasks", "Updated"),
+            'id'                    => Module::t("tasks", 'ID'),
+            'name'                  => Module::t("tasks", "Name"),
+            'command_type'          => Module::t("tasks", "Command type"),
+            'command_params'        => Module::t("tasks", "Parameters"),
+            'command'               => Module::t("tasks", "Command"),
+            'priority'              => Module::t("tasks", "Priority"),
+            'status'                => Module::t("tasks", "Status"),
+            'schedule_type'         => Module::t("tasks", "Launch type"),
+            'date_start'            => Module::t("tasks", "Launch date"),
+            'time_start'            => Module::t("tasks", "Launch time"),
+            'period'                => Module::t("tasks", "Launch frequency"),
+            'time_launch'           => Module::t("tasks", "Interval"),
+            'day_launch'            => Module::t("tasks", "Launch days"),
+            'max_execution_time'    => Module::t("tasks", "Maximum execution time"),
+            'launch_count'          => Module::t("tasks", "Number of runs"),
+            'max_restarts_count'    => Module::t("tasks", "Maximum number of runs"),
+            'last_run_at'           => Module::t("tasks", "Last run in"),
+            'pid'                   => Module::t("tasks", "Workflow PID"),
+            'execution_time'        => Module::t("tasks", "Task execution time"),
+            'created_at'            => Module::t("tasks", "Created"),
+            'updated_at'            => Module::t("tasks", "Updated"),
         ];
     }
 
@@ -312,11 +313,11 @@ class Task extends \yii\db\ActiveRecord
     public static function getScheduleTypeList()
     {
         return [
-            self::TASK_PERIODIC_TYPE_ONCE               => Yii::t("tasks", "One-time"),
-            self::TASK_PERIODIC_TYPE_ONCE_DAY           => Yii::t("tasks", "Every day, once a day"),
-            self::TASK_PERIODIC_TYPE_SEVERAL_DAY        => Yii::t("tasks", "Every day, several times a day"),
-            self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY    => Yii::t("tasks", "Weekly, once a day"),
-            self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY => Yii::t("tasks", "Weekly, several times a day"),
+            self::TASK_PERIODIC_TYPE_ONCE               => Module::t("tasks", "One-time"),
+            self::TASK_PERIODIC_TYPE_ONCE_DAY           => Module::t("tasks", "Every day, once a day"),
+            self::TASK_PERIODIC_TYPE_SEVERAL_DAY        => Module::t("tasks", "Every day, several times a day"),
+            self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY    => Module::t("tasks", "Weekly, once a day"),
+            self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY => Module::t("tasks", "Weekly, several times a day"),
         ];
     }
 
@@ -338,9 +339,9 @@ class Task extends \yii\db\ActiveRecord
     public static function getPriorityList()
     {
         return [
-            self::TASK_PRIORITY_LOW             => Yii::t("tasks", "Low"),
-            self::TASK_PRIORITY_NORMAL          => Yii::t("tasks", "Normal"),
-            self::TASK_PRIORITY_HIGH            => Yii::t("tasks", "High"),
+            self::TASK_PRIORITY_LOW             => Module::t("tasks", "Low"),
+            self::TASK_PRIORITY_NORMAL          => Module::t("tasks", "Normal"),
+            self::TASK_PRIORITY_HIGH            => Module::t("tasks", "High"),
         ];
     }
 
@@ -362,14 +363,14 @@ class Task extends \yii\db\ActiveRecord
     public static function getStatusList()
     {
         return [
-            self::TASK_STATUS_WAITING           => Yii::t("tasks", "Launch expected"),
-            self::TASK_STATUS_QUEUE             => Yii::t("tasks", "In queue"),
-            self::TASK_STATUS_PROGRESS          => Yii::t("tasks", "In progress"),
-            self::TASK_STATUS_COMPLETE          => Yii::t("tasks", "Successfully"),
-            self::TASK_STATUS_UNSUCCESSFULLY    => Yii::t("tasks", "Error"),
-            self::TASK_STATUS_SUSPENDED         => Yii::t("tasks", "Suspended"),
-            self::TASK_STATUS_CANCELED          => Yii::t("tasks", "Cancelled"),
-            self::TASK_STATUS_DISABLED          => Yii::t("tasks", "Disabled"),
+            self::TASK_STATUS_WAITING           => Module::t("tasks", "Launch expected"),
+            self::TASK_STATUS_QUEUE             => Module::t("tasks", "In queue"),
+            self::TASK_STATUS_PROGRESS          => Module::t("tasks", "In progress"),
+            self::TASK_STATUS_COMPLETE          => Module::t("tasks", "Successfully"),
+            self::TASK_STATUS_UNSUCCESSFULLY    => Module::t("tasks", "Error"),
+            self::TASK_STATUS_SUSPENDED         => Module::t("tasks", "Suspended"),
+            self::TASK_STATUS_CANCELED          => Module::t("tasks", "Cancelled"),
+            self::TASK_STATUS_DISABLED          => Module::t("tasks", "Disabled"),
         ];
     }
 

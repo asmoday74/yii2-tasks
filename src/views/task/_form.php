@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use asmoday74\tasks\Module;
 
 /** @var yii\web\View $this */
 /** @var asmoday74\tasks\models\Task $model */
@@ -50,7 +51,7 @@ use yii\helpers\Url;
 
     <div class="card">
         <div class="card-header">
-            <?=Yii::t("tasks","Schedule the task")?>
+            <?=Module::t("tasks","Schedule the task")?>
         </div>
         <div class="card-body">
             <div class="form-group row">
@@ -72,13 +73,13 @@ use yii\helpers\Url;
                 <div class="col-md-8 task-day_launch-block" style="display: none">
                     <?= $form->field($model, 'day_launch', ['options' => ['class' => '']])->checkboxList(
                         [
-                            '1' => Yii::t("tasks","Monday"),
-                            '2' => Yii::t("tasks","Tuesday"),
-                            '3' => Yii::t("tasks","Wednesday"),
-                            '4' => Yii::t("tasks","Thursday"),
-                            '5' => Yii::t("tasks","Friday"),
-                            '6' => Yii::t("tasks","Saturday"),
-                            '7' => Yii::t("tasks","Sunday")
+                            '1' => Module::t("tasks","Monday"),
+                            '2' => Module::t("tasks","Tuesday"),
+                            '3' => Module::t("tasks","Wednesday"),
+                            '4' => Module::t("tasks","Thursday"),
+                            '5' => Module::t("tasks","Friday"),
+                            '6' => Module::t("tasks","Saturday"),
+                            '7' => Module::t("tasks","Sunday")
                         ],
                         [
                             'item' => function($index, $label, $name, $checked, $value) {
