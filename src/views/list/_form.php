@@ -17,7 +17,7 @@ use asmoday74\tasks\Module;
         'id' => 'form-modal-edit',
         'enableClientValidation' => false,
         'enableAjaxValidation' => true,
-        'validationUrl' => Url::to(['task/validation']),
+        'validationUrl' => Url::to(['list/validation']),
         ]); ?>
 
     <div class="form-group row">

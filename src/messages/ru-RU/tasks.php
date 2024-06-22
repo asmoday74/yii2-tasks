@@ -77,6 +77,8 @@ return [
     "  2) Revert all module migrations\n\n" => "  2) Отменить все миграции модуля\n\n",
     "Your choice: " => "Выш выбор: ",
     "Error! Your selection has not been recognized.\n\n" => "Ошибка! Ваш выбор не распознан.\n\n",
+    "Cancel" => "Отмена",
+    "Save" => "Сохранить"
 ];
 
 
