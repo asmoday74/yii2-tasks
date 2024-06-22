@@ -17,8 +17,8 @@ $this->params['actions'][] = Html::a(Module::t("tasks","Create task"), null, [
         'title' => Module::t("tasks","Creating a task"),
         'url' => Url::to(['create']),
         'size' => 'modal-xl',
-        'canselName' => Module::t("tasks","Cancel"),
-        'submitName' => Module::t("tasks","Save"),
+        'cancel-name' => Module::t("tasks","Cancel"),
+        'submit-name' => Module::t("tasks","Save"),
     ]
 ]);
 ?>
