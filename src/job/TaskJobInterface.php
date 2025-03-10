@@ -8,5 +8,5 @@ interface TaskJobInterface
     /**
      * @return bool result of the job execution
      */
-    public function execute(): bool;
+    public function execute();
 }
