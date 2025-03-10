@@ -29,13 +29,8 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
         if (!ArrayHelper::keyExists('id',$config)) {
             $reflection = new \ReflectionClass($this);
 
-            $namespace = $reflection->getNamespaceName();
-            $command = $reflection->getShortName();
-            if ($namespace != 'app\\jobs') {
-                $command = $namespace . '\\' . $command;
-            }
             $command = [
-                'command' => $command,
+                'command' => $reflection->getNamespaceName() . '\\' . $reflection->getShortName(),
                 'params' => ArrayHelper::getValue($config, 'params', [])
             ];
             $task = new Task([
