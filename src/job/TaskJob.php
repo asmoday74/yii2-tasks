@@ -2,7 +2,6 @@
 
 namespace asmoday74\tasks\job;
 
-use asmoday74\tasks\helpers\TaskHelper;
 use asmoday74\tasks\models\TaskLog;
 use asmoday74\tasks\Module;
 use Yii;
@@ -35,10 +34,13 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
             if ($namespace != 'app\\jobs') {
                 $command = $namespace . '\\' . $command;
             }
+            $command = [
+                'command' => $command,
+                'params' => ArrayHelper::getValue($config, 'params', [])
+            ];
             $task = new Task([
                 'name' => ArrayHelper::getValue($config, 'name', 'new_task_' . date('YmdHis', time())),
                 'command' => $command,
-                'command_params' => ArrayHelper::getValue($config, 'params', []),
                 'priority' => ArrayHelper::getValue($config, 'priority', Task::TASK_PRIORITY_LOW),
                 'max_execution_time' => ArrayHelper::getValue($config, 'max_execution_time', 0),
                 'max_restarts_count' => ArrayHelper::getValue($config, 'max_restarts_count', 0),
