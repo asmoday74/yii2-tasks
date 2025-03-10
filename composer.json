@@ -17,7 +17,8 @@
         "ext-pcntl": "*",
         "yiisoft/yii2": "^2.0.42",
         "yiisoft/yii2-bootstrap5": "~2.0.4",
-        "asmoday74/yii2-adminlte3": "*"
+        "asmoday74/yii2-adminlte3": "*",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {

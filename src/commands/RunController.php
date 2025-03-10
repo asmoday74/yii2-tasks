@@ -116,6 +116,11 @@ class RunController extends Controller
         return true;
     }
 
+    /**
+     * Resets the status of tasks that have encountered unexpected termination of the process, updates the task status to waiting, and logs the event.
+     *
+     * @return void
+     */
     private function resetStatusTask()
     {
         $processList = TaskHelper::getProcessList();
@@ -153,7 +158,12 @@ class RunController extends Controller
         }
     }
 
-    private function roleManager(): bool
+    /**
+     * Manages the role for a task, including updating task status, forking worker processes, handling timeouts, and logging task completion or errors.
+     *
+     * @return bool Indicates whether the role management was successful or not.
+     */
+    private function roleManager()
     {
         try {
             Task::updateAll(
@@ -264,17 +274,22 @@ class RunController extends Controller
         }
     }
 
-    private function roleWorker(): bool
+    /**
+     * Execute the worker role for the current task.
+     *
+     * This method creates an instance of the task class based on the command class specified in the task information and executes it.
+     *
+     * @return bool|int Returns WORKER_STATUS_SUCCESS if the task executed successfully, WORKER_STATUS_ERROR otherwise.
+     */
+    private function roleWorker()
     {
         try {
             $taskInfo = Task::findOne($this->taskID);
             if (!mb_strpos($taskInfo->command_class, '\\')) {
-                $namespace = $this->_taskModule->jobsPath;
-            } else {
-                $namespace = "";
+                $taskInfo->command_class = $this->_taskModule->jobsPath . '\\' . $taskInfo->command_class;
             }
             $taskParams = [
-                'class' => $namespace . $taskInfo->command_class,
+                'class' => $taskInfo->command_class,
                 'params' => $taskInfo->command_params,
                 'id' => $this->taskID,
                 'showLog' => !empty($this->showLog)
