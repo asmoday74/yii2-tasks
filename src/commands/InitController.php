@@ -37,10 +37,10 @@ class InitController extends Controller
             '║                                                ║'. "\n" .
             '╚════════════════════════════════════════════════╝';
         echo $name = $this->ansiFormat($welcome . "\n\n", Console::FG_GREEN);
-        echo Module::t("tasks","Select the operation you want to perform:\n");
-        echo Module::t("tasks","  1) Apply all module migrations\n");
-        echo Module::t("tasks","  2) Revert all module migrations\n\n");
-        echo Module::t("tasks","Your choice: ");
+        echo Yii::t("tasks","Select the operation you want to perform:\n");
+        echo Yii::t("tasks","  1) Apply all module migrations\n");
+        echo Yii::t("tasks","  2) Revert all module migrations\n\n");
+        echo Yii::t("tasks","Your choice: ");
 
         if(!is_null($this->choice))
             $selected = $this->choice;
@@ -52,7 +52,7 @@ class InitController extends Controller
         } else if($selected == "2") {
             Yii::$app->runAction('migrate/down', ['migrationPath' => '@vendor/asmoday74/yii2-tasks/src/migrations', 'interactive' => true]);
         } else {
-            echo $this->ansiFormat(Module::t("tasks","Error! Your selection has not been recognized.\n\n"), Console::FG_RED);
+            echo $this->ansiFormat(Yii::t("tasks","Error! Your selection has not been recognized.\n\n"), Console::FG_RED);
             return ExitCode::UNSPECIFIED_ERROR;
         }
 

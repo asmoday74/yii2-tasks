@@ -26,7 +26,8 @@ class m240313_185632_task_init extends Migration
             'launch_count' => $this->integer()->notNull()->defaultValue(0)->comment('Count of attempts to start tasks'),
             'max_restarts_count' => $this->integer()->notNull()->defaultValue(0)->comment('maximum count of task restarts'),
             'last_run_at' => $this->timestamp()->defaultValue(null)->comment('Ask last run time'),
-            'pid' => $this->integer()->defaultValue(null)->comment('PID worker'),
+            'director_pid' => $this->integer()->defaultValue(null)->comment('Task Director PID'),
+            'manager_pid' => $this->integer()->defaultValue(null)->comment('Task Manager PID'),
             'execution_time' => $this->integer()->defaultValue(null)->comment('Execution time'),
             'created_at' => $this->timestamp()->defaultValue(null)->comment('Ask created time'),
             'updated_at' => $this->timestamp()->defaultValue(null)->comment('Ask updated time'),
@@ -34,32 +35,10 @@ class m240313_185632_task_init extends Migration
         $this->addCommentOnColumn('{{%task}}', 'time_launch', 'Time or interval to start');
         $this->addCommentOnColumn('{{%task}}', 'day_launch', 'Array of days of the week to run the task');
         $this->addCommentOnTable('{{%task}}','Task list for cron');
-
-        $this->createTable('{{%task_log}}', [
-            'id' => $this->bigPrimaryKey(),
-            'task_id' => $this->integer()->notNull()->comment('Task ID'),
-            'type' => $this->integer()->notNull()->comment('Message type: 10 - Debug, 20 - Info, 30 - Warning, 40 - Error'),
-            'message' => $this->text()->notNull()->comment('Text messages'),
-            'created_at' => $this->timestamp()->notNull()->comment('Created message time'),
-        ]);
-        $this->addCommentOnTable('{{%task_log}}','task logs');
-        $this->createIndex('idx-task_log-task_id', '{{%task_log}}', 'task_id');
-        $this->addForeignKey(
-            'fk-task_id-task-id',
-            '{{%task_log}}',
-            'task_id',
-            '{{%task}}',
-            'id',
-            'CASCADE'
-        );
     }
 
     public function down()
     {
-        $this->dropForeignKey('fk-task_id-task-id', '{{%task_log}}');
-        $this->dropIndex('idx-task_log-task_id', '{{%task_log}}');
-        $this->dropTable('{{%task_log}}');
-
         $this->dropTable('{{%task}}');
     }
 }

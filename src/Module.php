@@ -4,7 +4,7 @@ namespace asmoday74\tasks;
 
 use Yii;
 use yii\helpers\Json;
-
+use yii\log\Logger;
 
 class Module extends \yii\base\Module
 {
@@ -20,44 +20,52 @@ class Module extends \yii\base\Module
     /**
      * @var string, the name of module
      */
-    public $name = "YII2 Tasks";
+    public string $name = "YII2 Tasks";
 
     /**
      * @var string, the description of module
      */
-    public $description = "Task manager for Yii2";
+    public string $description = "Task manager for Yii2";
 
+    /**
+     * @var string, default path to jobs task
+     */
+    public string $jobsPath = '@app/jobs';
+
+    /**
+     * @var int, maximum execution time of the director of the tasks
+     */
+    public int $maxExecutionTimeDirector = 10;
+    /**
+     * @var int, maximum task execution time.
+     * This value has priority in relation to the value established in the task itself.
+     */
+    public int $maxExecutionTimeWorker = 600;
+    /**
+     * @var int, the minimum time before the restart
+     */
+    public int $minTimeRestart = 60;
+
+    /**
+     * {@inheritDoc}
+     */
     public function init()
     {
         parent::init();
 
-        $this->registerTranslations();
-    }
-
-    /**
-     * Registers translations for module
-     */
-    public function registerTranslations()
-    {
-        Yii::$app->i18n->translations['asmoday74/tasks'] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en-US',
-            'basePath'       => '@vendor/asmoday74/yii2-tasks/src/messages',
-            'fileMap'        => [
-                'asmoday74/tasks' => 'tasks.php',
-            ],
+        Yii::$app->i18n->translations['tasks'] = [
+            'class' => 'yii\i18n\PhpMessageSource',
+            'basePath' => '@vendor/asmoday74/yii2-tasks/src/messages',
         ];
+
+        if (Yii::$app instanceof \yii\console\Application) {
+            $this->controllerNamespace = 'asmoday74\tasks\commands';
+        }
     }
 
     /**
-     * Public translation function, Module::t('asmoday74/tasks', 'Hello');
-     * @return string of current message translation
+     * {@inheritDoc}
      */
-    public static function t($category, $message, $params = [], $language = null)
-    {
-        return Yii::t('asmoday74/' . $category, $message, $params, $language);
-    }
-
     protected function defaultVersion()
     {
         $packageInfo = Json::decode(file_get_contents(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'composer.json'));
@@ -67,4 +75,21 @@ class Module extends \yii\base\Module
         }
         return parent::defaultVersion();
     }
+
+    /**
+     * @param int $taksID
+     * @param string $message
+     * @param int $level
+     *
+     * @return void
+     */
+    public static function log(int $taksID, string $message, $level = Logger::LEVEL_INFO)
+    {
+        Yii::getLogger()->log(
+            '[' . $taksID . '] ' . $message,
+            $level,
+            get_called_class()
+        );
+    }
+
 }

@@ -30,7 +30,7 @@ use asmoday74\tasks\Module;
 
     <div class="form-group row">
         <div class="col-md-4">
-            <?= $form->field($model, 'command', ['options' => ['class' => '']])->dropDownList($model->getJobList()) ?>
+            <?= $form->field($model, 'command', ['options' => ['class' => '']])->dropDownList(\asmoday74\tasks\helpers\TaskHelper::getJobList()) ?>
         </div>
         <div class="col-md-8">
             <?= $form->field($model, 'command_params', ['options' => ['class' => '']])->textInput() ?>
@@ -51,7 +51,7 @@ use asmoday74\tasks\Module;
 
     <div class="card">
         <div class="card-header">
-            <?=Module::t("tasks","Schedule the task")?>
+            <?=Yii::t("tasks","Schedule the task")?>
         </div>
         <div class="card-body">
             <div class="form-group row">
@@ -73,13 +73,13 @@ use asmoday74\tasks\Module;
                 <div class="col-md-8 task-day_launch-block" style="display: none">
                     <?= $form->field($model, 'day_launch', ['options' => ['class' => '']])->checkboxList(
                         [
-                            '1' => Module::t("tasks","Monday"),
-                            '2' => Module::t("tasks","Tuesday"),
-                            '3' => Module::t("tasks","Wednesday"),
-                            '4' => Module::t("tasks","Thursday"),
-                            '5' => Module::t("tasks","Friday"),
-                            '6' => Module::t("tasks","Saturday"),
-                            '7' => Module::t("tasks","Sunday")
+                            '1' => Yii::t("tasks","Monday"),
+                            '2' => Yii::t("tasks","Tuesday"),
+                            '3' => Yii::t("tasks","Wednesday"),
+                            '4' => Yii::t("tasks","Thursday"),
+                            '5' => Yii::t("tasks","Friday"),
+                            '6' => Yii::t("tasks","Saturday"),
+                            '7' => Yii::t("tasks","Sunday")
                         ],
                         [
                             'item' => function($index, $label, $name, $checked, $value) {

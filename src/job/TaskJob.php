@@ -2,19 +2,31 @@
 
 namespace asmoday74\tasks\job;
 
+use asmoday74\tasks\helpers\TaskHelper;
+use asmoday74\tasks\models\TaskLog;
+use asmoday74\tasks\Module;
+use Yii;
 use yii\base\BaseObject;
+use yii\base\InvalidConfigException;
+use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use asmoday74\tasks\models\Task;
+use yii\log\Logger;
 
 abstract class TaskJob extends BaseObject implements TaskJobInterface
 {
-    public $params;
+    public array $params;
+    public int $id;
+    public bool $showLog = false;
 
-    public $id;
-
+    /**
+     * @param array $config
+     *
+     * @throws Exception
+     * @throws \Exception
+     */
     public function __construct($config = [])
     {
-
         if (!ArrayHelper::keyExists('id',$config)) {
             $reflection = new \ReflectionClass($this);
 
@@ -39,9 +51,50 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
             return $task->save();
         }
 
-        $config['params'] = json_decode($config['params'], true);
+        try {
+            $config['params'] = json_decode($config['params'], true);
+            parent::__construct($config);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
-        return parent::__construct($config);
+    /**
+     * @param string $message
+     * @param int $level
+     *
+     * @throws InvalidConfigException
+     */
+    public function log(string $message, int $level = Logger::LEVEL_INFO)
+    {
+        if ($this->showLog) {
+            echo sprintf(
+                "%s %s [%s] %s\n",
+                Yii::$app->formatter->asDatetime(time()),
+                $this->formatBytes(memory_get_usage(true)),
+                mb_strtolower(Logger::getLevelName($level)),
+                $message
+            );
+        }
+        Module::log($this->id, $message ,$level);
+    }
+
+    /**
+     * @param integer $bytes
+     * @param integer $precision
+     *
+     * @return string
+     */
+    private function formatBytes(int $bytes, int $precision = 2) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, $precision) . $units[$pow];
     }
 
 }

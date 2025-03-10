@@ -9,16 +9,16 @@ use asmoday74\tasks\Module;
 /** @var yii\web\View $this */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = Module::t('tasks','Task list');
+$this->title = Yii::t('tasks','Task list');
 $this->params['breadcrumbs'][] = $this->title;
-$this->params['actions'][] = Html::a(Module::t("tasks","Create task"), null, [
+$this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
     'class' => 'btn btn-success modal-edit-toggle',
     'data' => [
-        'title' => Module::t("tasks","Creating a task"),
+        'title' => Yii::t("tasks","Creating a task"),
         'url' => Url::to(['create']),
         'size' => 'modal-xl',
-        'cancel' => Module::t("tasks","Cancel"),
-        'submit' => Module::t("tasks","Save"),
+        'cancel' => Yii::t("tasks","Cancel"),
+        'submit' => Yii::t("tasks","Save"),
     ]
 ]);
 ?>
@@ -78,18 +78,18 @@ $this->params['actions'][] = Html::a(Module::t("tasks","Create task"), null, [
                 'class' => 'yii\grid\ActionColumn',
                 'headerOptions' => ['class' => 'text-center'],
                 'contentOptions' => ['class' => 'text-center'],
-                'header' => Module::t("tasks",'Actions'),
+                'header' => Yii::t("tasks",'Actions'),
                 'template' => "{view}&nbsp;{update}&nbsp;{delete}",
                 'buttons' => [
                     'view' => function ($url, $model) {
                         return Html::a('<span class="bi bi-eye-fill"></span>', $url, [
-                            'title' => Module::t("tasks", "View")
+                            'title' => Yii::t("tasks", "View")
                         ]);
                     },
 
                     'update' => function ($url, $model) {
                         return Html::a('<span class="bi bi-pencil-fill"></span>', null, [
-                            'title' => Module::t("tasks", "Update"),
+                            'title' => Yii::t("tasks", "Update"),
                             'data' => [
                                 'title' => 'Изменение задания ' . $model->name,
                                 'url' => Url::to(['update','id' => $model->id]),
@@ -100,9 +100,9 @@ $this->params['actions'][] = Html::a(Module::t("tasks","Create task"), null, [
                     },
                     'delete' => function ($url, $model) {
                         return Html::a('<span class="bi bi-trash-fill"></span>', $url, [
-                            'title' => Module::t("tasks", "Delete"),
+                            'title' => Yii::t("tasks", "Delete"),
                             'data' => [
-                                'confirm' => Module::t("tasks", "Are you sure you want to delete this item?"),
+                                'confirm' => Yii::t("tasks", "Are you sure you want to delete this item?"),
                             ],
                         ]);
                     },

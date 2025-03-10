@@ -172,6 +172,6 @@ class ListController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException(Module::t("tasks", "The requested page does not exist"));
+        throw new NotFoundHttpException(Yii::t("tasks", "The requested page does not exist"));
     }
 }
