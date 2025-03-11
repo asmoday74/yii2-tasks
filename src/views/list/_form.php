@@ -18,7 +18,7 @@ use asmoday74\tasks\Module;
         'enableClientValidation' => false,
         'enableAjaxValidation' => true,
         'validationUrl' => Url::to(['list/validation']),
-        ]); ?>
+    ]); ?>
 
     <div class="form-group row">
         <div class="col-md-8">
@@ -30,7 +30,7 @@ use asmoday74\tasks\Module;
 
     <div class="form-group row">
         <div class="col-md-4">
-            <?= $form->field($model, 'command', ['options' => ['class' => '']])->dropDownList(\asmoday74\tasks\helpers\TaskHelper::getJobList()) ?>
+            <?= $form->field($model, 'command_class', ['options' => ['class' => '']])->dropDownList(\asmoday74\tasks\helpers\TaskHelper::getJobList()) ?>
         </div>
         <div class="col-md-8">
             <?= $form->field($model, 'command_params', ['options' => ['class' => '']])->textInput() ?>

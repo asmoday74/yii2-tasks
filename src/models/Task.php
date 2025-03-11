@@ -86,7 +86,7 @@ class Task extends \yii\db\ActiveRecord
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_EDIT_GUI] = ['name', 'command_class', 'command_params', 'period', 'time_launch', 'day_launch', 'time_start','date_start'];
+        $scenarios[self::SCENARIO_EDIT_GUI] = ['name', 'command_class', 'command_params', 'period', 'time_launch', 'day_launch', 'time_start','date_start','schedule_type'];
         $scenarios[self::SCENARIO_DEFAULT] = ['status', 'max_execution_time', 'launch_count', 'director_pid', 'manager_pid', 'last_run_at', 'execution_time'];
         return $scenarios;
     }
