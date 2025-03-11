@@ -444,22 +444,4 @@ class Task extends \yii\db\ActiveRecord
 
         return $currentDatetime;
     }
-
-    /**
-     * Returns a list of available job
-     * @return array
-     * @throws \ReflectionException
-     */
-    public function getJobList()
-    {
-        return Yii::$app->cache->getOrSet('TaskJobList', function () {
-            $dir = \Yii::getAlias(TaskModule::getInstance()->jobsPath);
-            $jobs = [];
-            foreach(glob($dir . '/*') as $file) {
-                $job = basename($file,".php");
-                $jobs[$job] = $job;
-            }
-            return $jobs;
-        }, 5 * 60);
-    }
 }

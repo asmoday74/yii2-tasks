@@ -3,6 +3,7 @@
 namespace asmoday74\tasks\helpers;
 
 use asmoday74\tasks\Module;
+use asmoday74\tasks\Module as TaskModule;
 use Yii;
 use asmoday74\tasks\models\Task;
 use asmoday74\tasks\models\TaskLog;
@@ -85,5 +86,23 @@ class TaskHelper
                 ['status' => Task::TASK_STATUS_PROGRESS],
             ])
             ->all();
+    }
+
+    /**
+     * Returns a list of available job
+     * @return array
+     * @throws \ReflectionException
+     */
+    public static function getJobList()
+    {
+        return Yii::$app->cache->getOrSet('TaskJobList', function () {
+            $dir = \Yii::getAlias(TaskModule::getInstance()->jobsPath);
+            $jobs = [];
+            foreach(glob($dir . '/*') as $file) {
+                $job = basename($file,".php");
+                $jobs[$job] = $job;
+            }
+            return $jobs;
+        }, 5 * 60);
     }
 }
