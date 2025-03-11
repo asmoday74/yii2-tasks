@@ -42,7 +42,7 @@ $this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
             [
                 'attribute' => 'command',
                 'content' => function ($model, $key, $index, $column) {
-                    return $model->command;
+                    return $model->command_class;
                 }
             ],
             [
