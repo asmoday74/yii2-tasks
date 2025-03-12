@@ -302,7 +302,7 @@ class Task extends \yii\db\ActiveRecord
             'name'                  => Yii::t("tasks", "Name"),
             'command_type'          => Yii::t("tasks", "Command type"),
             'command_params'        => Yii::t("tasks", "Parameters"),
-            'command'               => Yii::t("tasks", "Command"),
+            'command_class'         => Yii::t("tasks", "Command"),
             'priority'              => Yii::t("tasks", "Priority"),
             'status'                => Yii::t("tasks", "Status"),
             'schedule_type'         => Yii::t("tasks", "Launch type"),

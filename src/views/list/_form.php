@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
-use asmoday74\tasks\Module;
 
 /** @var yii\web\View $this */
 /** @var asmoday74\tasks\models\Task $model */
@@ -30,7 +29,14 @@ use asmoday74\tasks\Module;
 
     <div class="form-group row">
         <div class="col-md-4">
-            <?= $form->field($model, 'command_class', ['options' => ['class' => '']])->dropDownList(\asmoday74\tasks\helpers\TaskHelper::getJobList()) ?>
+            <?php
+                if ($model->isNewRecord) {
+                    echo $form->field($model, 'command_class', ['options' => ['class' => '']])
+                        ->dropDownList(\asmoday74\tasks\helpers\TaskHelper::getJobList());
+                } else {
+                    echo $form->field($model, 'command_class', ['options' => ['class' => '']])->textInput(['readonly' => true]);
+                }
+            ?>
         </div>
         <div class="col-md-8">
             <?= $form->field($model, 'command_params', ['options' => ['class' => '']])->textInput() ?>

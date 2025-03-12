@@ -82,24 +82,31 @@ $this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
                 'template' => "{view}&nbsp;{update}&nbsp;{delete}",
                 'buttons' => [
                     'view' => function ($url, $model) {
-                        return Html::a('<span class="bi bi-eye-fill"></span>', $url, [
-                            'title' => Yii::t("tasks", "View")
+                        return Html::a('<span class="fas fa-eye"></span>', $url, [
+                            'title' => Yii::t("tasks", "View"),
+                            'data' => [
+                                'title' => Yii::t("tasks", "Viewing a task {name}", ['name' => $model->name]),
+                                'url' => Url::to(['view','id' => $model->id]),
+                                'size' => 'modal-xl'
+                            ],
+                            'class' => ' modal-edit-toggle'
                         ]);
                     },
-
                     'update' => function ($url, $model) {
-                        return Html::a('<span class="bi bi-pencil-fill"></span>', null, [
+                        return Html::a('<span class="fas fa-pencil"></span>', null, [
                             'title' => Yii::t("tasks", "Update"),
                             'data' => [
-                                'title' => 'Изменение задания ' . $model->name,
+                                'title' => Yii::t("tasks", "Update a task {name}", ['name' => $model->name]),
                                 'url' => Url::to(['update','id' => $model->id]),
-                                'size' => 'xl'
+                                'size' => 'modal-xl',
+                                'cancel' => Yii::t("tasks","Cancel"),
+                                'submit' => Yii::t("tasks","Save"),
                             ],
                             'class' => 'modal-edit-toggle'
                         ]);
                     },
                     'delete' => function ($url, $model) {
-                        return Html::a('<span class="bi bi-trash-fill"></span>', $url, [
+                        return Html::a('<span class="fas fa-trash-can"></span>', $url, [
                             'title' => Yii::t("tasks", "Delete"),
                             'data' => [
                                 'confirm' => Yii::t("tasks", "Are you sure you want to delete this item?"),
