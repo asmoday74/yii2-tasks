@@ -2,9 +2,8 @@
 
 namespace asmoday74\tasks\job;
 
-use asmoday74\tasks\models\TaskLog;
+use asmoday74\tasks\helpers\TaskHelper;
 use asmoday74\tasks\Module;
-use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
@@ -29,13 +28,12 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
         if (!ArrayHelper::keyExists('id',$config)) {
             $reflection = new \ReflectionClass($this);
 
-            $command = [
-                'command' => $reflection->getNamespaceName() . '\\' . $reflection->getShortName(),
-                'params' => ArrayHelper::getValue($config, 'params', [])
-            ];
             $task = new Task([
                 'name' => ArrayHelper::getValue($config, 'name', 'new_task_' . date('YmdHis', time())),
-                'command' => $command,
+                'command' => [
+                    'command' => $reflection->getNamespaceName() . '\\' . $reflection->getShortName(),
+                    'params' => ArrayHelper::getValue($config, 'params', [])
+                ],
                 'priority' => ArrayHelper::getValue($config, 'priority', Task::TASK_PRIORITY_LOW),
                 'max_execution_time' => ArrayHelper::getValue($config, 'max_execution_time', 0),
                 'max_restarts_count' => ArrayHelper::getValue($config, 'max_restarts_count', 0),
@@ -45,6 +43,7 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
                 'period' => ArrayHelper::getValue($config, 'period', '00:00:01'),
                 'day_launch' => ArrayHelper::getValue($config, 'day_launch', [])
             ]);
+
             return $task->save();
         }
 
@@ -66,32 +65,9 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
     public function log(string $message, int $level = Logger::LEVEL_INFO)
     {
         if ($this->showLog) {
-            echo sprintf(
-                "%s %s [%s] %s\n",
-                Yii::$app->formatter->asDatetime(time()),
-                $this->formatBytes(memory_get_usage(true)),
-                mb_strtolower(Logger::getLevelName($level)),
-                $message
-            );
+            TaskHelper::printLog('[taskID: ' . $this->id . ']' . $message, $level);
         }
         Module::log($this->id, $message ,$level);
-    }
-
-    /**
-     * @param integer $bytes
-     * @param integer $precision
-     *
-     * @return string
-     */
-    private function formatBytes(int $bytes, int $precision = 2) {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow(1024, $pow);
-
-        return round($bytes, $precision) . $units[$pow];
     }
 
 }

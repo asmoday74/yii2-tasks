@@ -86,7 +86,11 @@ class Task extends \yii\db\ActiveRecord
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_EDIT_GUI] = ['name', 'command_class', 'command_params', 'period', 'time_launch', 'day_launch', 'time_start','date_start','schedule_type'];
+        $scenarios[self::SCENARIO_EDIT_GUI] = [
+            'name', 'command_class', 'command_params', 'period', 'time_launch', 'day_launch',
+            'time_start', 'date_start', 'schedule_type', 'max_execution_time', 'max_restarts_count'
+
+        ];
         $scenarios[self::SCENARIO_DEFAULT] = ['status', 'max_execution_time', 'launch_count', 'director_pid', 'manager_pid', 'last_run_at', 'execution_time'];
         return $scenarios;
     }
@@ -102,7 +106,7 @@ class Task extends \yii\db\ActiveRecord
                     ],
                     'value' => function ($event) {
                         if ($this->command) {
-                            return json_encode(ArrayHelper::getValue($this->command,'params',[]));
+                            return json_encode(ArrayHelper::getValue($this->command, 'params', []));
                         }
                     },
                 ],
@@ -113,14 +117,14 @@ class Task extends \yii\db\ActiveRecord
                     ],
                     'value' => function ($event) {
                         if ($this->command) {
-                            return ArrayHelper::getValue($this->command,'command','');
+                            return ArrayHelper::getValue($this->command, 'command', '');
                         }
                     },
                 ],
                 [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
-                        self::EVENT_INIT => 'date_start',
+                        yii\db\BaseActiveRecord::EVENT_INIT => 'date_start',
                     ],
                     'value' => function ($event) {
                         $datetime = new \DateTime();
@@ -145,7 +149,7 @@ class Task extends \yii\db\ActiveRecord
                 [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
-                        self::EVENT_INIT => 'time_start',
+                        yii\db\BaseActiveRecord::EVENT_INIT => 'time_start',
                     ],
                     'value' => function ($event) {
                         $datetime = new \DateTime();
@@ -185,7 +189,7 @@ class Task extends \yii\db\ActiveRecord
                 [
                     'class' => AttributeBehavior::class,
                     'attributes' => [
-                        self::EVENT_INIT => 'period',
+                        yii\db\BaseActiveRecord::EVENT_INIT => 'period',
                     ],
                     'value' => function ($event) {
                         return '00:00:01';
@@ -238,20 +242,20 @@ class Task extends \yii\db\ActiveRecord
             $this->command = $command;
         }
 
-        if (($this->getDirtyAttributes(['time_launch'])) || ($this->isNewRecord)) {
-            switch ($this->schedule_type) {
-                case self::TASK_PERIODIC_TYPE_ONCE:
+        switch ($this->schedule_type) {
+            case self::TASK_PERIODIC_TYPE_ONCE:
+                if ($this->isNewRecord) {
                     $this->time_launch = new Expression("('$this->date_start $this->time_start' - NOW())");
-                    break;
-                case self::TASK_PERIODIC_TYPE_ONCE_DAY:
-                case self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY:
-                    $this->time_launch = $this->time_start;
-                    break;
-                case self::TASK_PERIODIC_TYPE_SEVERAL_DAY:
-                case self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY:
-                    $this->time_launch = $this->period;
-                    break;
-            }
+                }
+                break;
+            case self::TASK_PERIODIC_TYPE_ONCE_DAY:
+            case self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY:
+                $this->time_launch = $this->time_start;
+                break;
+            case self::TASK_PERIODIC_TYPE_SEVERAL_DAY:
+            case self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY:
+                $this->time_launch = $this->period;
+                break;
         }
 
         if (($this->getDirtyAttributes(['day_launch'])) || ($this->isNewRecord)) {
@@ -270,23 +274,23 @@ class Task extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'command'], 'required'],
-            [['command' , 'command_params', 'period', 'time_start', 'date_start', 'last_run_at', 'director_pid', 'manager_pid', 'execution_time', 'created_at', 'updated_at'], 'safe'],
+            [['command', 'command_params', 'period', 'time_start', 'date_start', 'last_run_at', 'director_pid', 'manager_pid', 'execution_time', 'created_at', 'updated_at'], 'safe'],
             [['priority', 'status', 'schedule_type', 'pid', 'execution_time'], 'default', 'value' => null],
             [['max_execution_time', 'launch_count', 'max_restarts_count'], 'default', 'value' => 0],
             [['priority', 'status', 'schedule_type', 'max_execution_time', 'launch_count', 'max_restarts_count', 'pid', 'execution_time'], 'integer'],
             [['day_launch'], 'each', 'rule' => ['integer']],
             [['time_start'], 'date', 'format' => 'HH:mm'],
             [['name'], 'string', 'max' => 255],
-            [['period'], 'required', 'when' => function($model) {
+            [['period'], 'required', 'when' => function ($model) {
                 return (($model->schedule_type == self::TASK_PERIODIC_TYPE_SEVERAL_DAY) || ($model->schedule_type == self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY));
             }],
-            [['time_start','date_start'], 'required', 'when' => function($model) {
+            [['time_start', 'date_start'], 'required', 'when' => function ($model) {
                 return ($model->schedule_type == self::TASK_PERIODIC_TYPE_ONCE);
             }],
-            [['time_start'], 'required', 'when' => function($model) {
+            [['time_start'], 'required', 'when' => function ($model) {
                 return (($model->schedule_type == self::TASK_PERIODIC_TYPE_ONCE_DAY) || ($model->schedule_type == self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY));
             }],
-            [['day_launch'], 'required', 'when' => function($model) {
+            [['day_launch'], 'required', 'when' => function ($model) {
                 return (($model->schedule_type == self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY) || ($model->schedule_type == self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY));
             }],
         ];
@@ -298,27 +302,27 @@ class Task extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'                    => Yii::t("tasks", 'ID'),
-            'name'                  => Yii::t("tasks", "Name"),
-            'command_type'          => Yii::t("tasks", "Command type"),
-            'command_params'        => Yii::t("tasks", "Parameters"),
-            'command_class'         => Yii::t("tasks", "Command"),
-            'priority'              => Yii::t("tasks", "Priority"),
-            'status'                => Yii::t("tasks", "Status"),
-            'schedule_type'         => Yii::t("tasks", "Launch type"),
-            'date_start'            => Yii::t("tasks", "Launch date"),
-            'time_start'            => Yii::t("tasks", "Launch time"),
-            'period'                => Yii::t("tasks", "Launch frequency"),
-            'time_launch'           => Yii::t("tasks", "Interval"),
-            'day_launch'            => Yii::t("tasks", "Launch days"),
-            'max_execution_time'    => Yii::t("tasks", "Maximum execution time"),
-            'launch_count'          => Yii::t("tasks", "Number of runs"),
-            'max_restarts_count'    => Yii::t("tasks", "Maximum number of runs"),
-            'last_run_at'           => Yii::t("tasks", "Last run in"),
-            'pid'                   => Yii::t("tasks", "Workflow PID"),
-            'execution_time'        => Yii::t("tasks", "Task execution time"),
-            'created_at'            => Yii::t("tasks", "Created"),
-            'updated_at'            => Yii::t("tasks", "Updated"),
+            'id' => Yii::t("tasks", 'ID'),
+            'name' => Yii::t("tasks", "Name"),
+            'command_type' => Yii::t("tasks", "Command type"),
+            'command_params' => Yii::t("tasks", "Parameters"),
+            'command_class' => Yii::t("tasks", "Command"),
+            'priority' => Yii::t("tasks", "Priority"),
+            'status' => Yii::t("tasks", "Status"),
+            'schedule_type' => Yii::t("tasks", "Launch type"),
+            'date_start' => Yii::t("tasks", "Launch date"),
+            'time_start' => Yii::t("tasks", "Launch time"),
+            'period' => Yii::t("tasks", "Launch frequency"),
+            'time_launch' => Yii::t("tasks", "Interval"),
+            'day_launch' => Yii::t("tasks", "Launch days"),
+            'max_execution_time' => Yii::t("tasks", "Maximum execution time"),
+            'launch_count' => Yii::t("tasks", "Number of runs"),
+            'max_restarts_count' => Yii::t("tasks", "Maximum number of runs"),
+            'last_run_at' => Yii::t("tasks", "Last run in"),
+            'pid' => Yii::t("tasks", "Workflow PID"),
+            'execution_time' => Yii::t("tasks", "Task execution time"),
+            'created_at' => Yii::t("tasks", "Created"),
+            'updated_at' => Yii::t("tasks", "Updated"),
         ];
     }
 
@@ -330,10 +334,10 @@ class Task extends \yii\db\ActiveRecord
     public static function getScheduleTypeList(): array
     {
         return [
-            self::TASK_PERIODIC_TYPE_ONCE               => Yii::t("tasks", "One-time"),
-            self::TASK_PERIODIC_TYPE_ONCE_DAY           => Yii::t("tasks", "Every day, once a day"),
-            self::TASK_PERIODIC_TYPE_SEVERAL_DAY        => Yii::t("tasks", "Every day, several times a day"),
-            self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY    => Yii::t("tasks", "Weekly, once a day"),
+            self::TASK_PERIODIC_TYPE_ONCE => Yii::t("tasks", "One-time"),
+            self::TASK_PERIODIC_TYPE_ONCE_DAY => Yii::t("tasks", "Every day, once a day"),
+            self::TASK_PERIODIC_TYPE_SEVERAL_DAY => Yii::t("tasks", "Every day, several times a day"),
+            self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY => Yii::t("tasks", "Weekly, once a day"),
             self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY => Yii::t("tasks", "Weekly, several times a day"),
         ];
     }
@@ -356,9 +360,9 @@ class Task extends \yii\db\ActiveRecord
     public static function getPriorityList(): array
     {
         return [
-            self::TASK_PRIORITY_LOW             => Yii::t("tasks", "Low"),
-            self::TASK_PRIORITY_NORMAL          => Yii::t("tasks", "Normal"),
-            self::TASK_PRIORITY_HIGH            => Yii::t("tasks", "High"),
+            self::TASK_PRIORITY_LOW => Yii::t("tasks", "Low"),
+            self::TASK_PRIORITY_NORMAL => Yii::t("tasks", "Normal"),
+            self::TASK_PRIORITY_HIGH => Yii::t("tasks", "High"),
         ];
     }
 
@@ -380,14 +384,14 @@ class Task extends \yii\db\ActiveRecord
     public static function getStatusList(): array
     {
         return [
-            self::TASK_STATUS_WAITING           => Yii::t("tasks", "Launch expected"),
-            self::TASK_STATUS_QUEUE             => Yii::t("tasks", "In queue"),
-            self::TASK_STATUS_PROGRESS          => Yii::t("tasks", "In progress"),
-            self::TASK_STATUS_COMPLETE          => Yii::t("tasks", "Successfully"),
-            self::TASK_STATUS_UNSUCCESSFULLY    => Yii::t("tasks", "Error"),
-            self::TASK_STATUS_SUSPENDED         => Yii::t("tasks", "Suspended"),
-            self::TASK_STATUS_CANCELED          => Yii::t("tasks", "Cancelled"),
-            self::TASK_STATUS_DISABLED          => Yii::t("tasks", "Disabled"),
+            self::TASK_STATUS_WAITING => Yii::t("tasks", "Launch expected"),
+            self::TASK_STATUS_QUEUE => Yii::t("tasks", "In queue"),
+            self::TASK_STATUS_PROGRESS => Yii::t("tasks", "In progress"),
+            self::TASK_STATUS_COMPLETE => Yii::t("tasks", "Successfully"),
+            self::TASK_STATUS_UNSUCCESSFULLY => Yii::t("tasks", "Error"),
+            self::TASK_STATUS_SUSPENDED => Yii::t("tasks", "Suspended"),
+            self::TASK_STATUS_CANCELED => Yii::t("tasks", "Cancelled"),
+            self::TASK_STATUS_DISABLED => Yii::t("tasks", "Disabled"),
         ];
     }
 
@@ -413,9 +417,9 @@ class Task extends \yii\db\ActiveRecord
     {
         $isDec = false;
 
-        $res = strpos($interval,'-');
+        $res = strpos($interval, '-');
 
-        if (strpos($interval,'-') !== false) {
+        if (strpos($interval, '-') !== false) {
             $isDec = true;
             $interval = trim($interval, '-');
         }

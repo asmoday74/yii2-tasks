@@ -110,6 +110,7 @@ class ListController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->scenario = Task::SCENARIO_EDIT_GUI;
 
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             $model->status = Task::TASK_STATUS_WAITING;

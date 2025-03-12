@@ -77,16 +77,16 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * @param int $taksID
+     * @param int $taskID
      * @param string $message
      * @param int $level
      *
      * @return void
      */
-    public static function log(int $taksID, string $message, $level = Logger::LEVEL_INFO)
+    public static function log(int $taskID, string $message, int $level = Logger::LEVEL_INFO)
     {
         Yii::getLogger()->log(
-            '[' . $taksID . '] ' . $message,
+            '[' . $taskID . '] ' . $message,
             $level,
             get_called_class()
         );

@@ -2,21 +2,25 @@
 
 namespace asmoday74\tasks\helpers;
 
-use asmoday74\tasks\Module;
-use asmoday74\tasks\Module as TaskModule;
 use Yii;
+use asmoday74\tasks\Module as TaskModule;
 use asmoday74\tasks\models\Task;
-use asmoday74\tasks\models\TaskLog;
+use yii\base\InvalidConfigException;
+use yii\log\Logger;
 
+/**
+ * Class TaskHelper
+ *
+ * This class provides helper methods for managing tasks and processes.
+ */
 class TaskHelper
 {
     /**
-     * @param int|null $pid
-     *
-     * @return false|mixed|string
-     *
-     * @throws \yii\base\InvalidConfigException
-     * @throws \Exception
+     * Returns the ID of the task from the job queue if found, false if not found, or a string containing the error message if an exception occurs
+     * @param int $director_pid The director PID to filter by
+     * @param int $min_time_restart The minimum time required for a restart
+     * @return int|false|string
+     * @throws InvalidConfigException
      */
     public static function getJobQueue(int $director_pid, int $min_time_restart)
     {
@@ -52,18 +56,16 @@ class TaskHelper
                 ':schedule_type_several_day_weekly' => Task::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY
             ]);
             $task = $command->queryOne();
-            if ($task) {
-                return $task['id'];
-            } else {
-                return false;
-            }
+            return $task ? $task['id'] : false;
         } catch (\yii\db\Exception $e) {
             return $e->getMessage();
         }
     }
 
     /**
-     * @return array
+     * Returns the list of running processes on the system.
+     *
+     * @return array An array containing the Process IDs (PIDs) of running processes.
      */
     public static function getProcessList()
     {
@@ -73,9 +75,11 @@ class TaskHelper
     }
 
     /**
-     * @return array
+     * Retrieves all hanging tasks from the database.
+     *
+     * @return array An array containing the hanging tasks with columns 'id', 'director_pid', 'manager_pid', 'launch_count'.
      */
-    public static function getHanging(): array
+    public static function getHanging()
     {
         return (new \yii\db\Query())
             ->select(['id', 'director_pid', 'manager_pid', 'launch_count'])
@@ -89,9 +93,11 @@ class TaskHelper
     }
 
     /**
-     * Returns a list of available job
-     * @return array
-     * @throws \ReflectionException
+     * Retrieves the list of available job types from the cache or generates it if not present.
+     *
+     * This method retrieves the list of available job types by scanning the directory defined in the TaskModule configuration.
+     *
+     * @return array An array containing the list of available job types where keys and values are the job type names.
      */
     public static function getJobList()
     {
@@ -105,4 +111,38 @@ class TaskHelper
             return $jobs;
         }, 5 * 60);
     }
+
+    /**
+     * @param string $message
+     * @param int $level
+     *
+     * @throws InvalidConfigException
+     */
+    public static function printLog(string $message, int $level = Logger::LEVEL_INFO)
+    {
+        echo sprintf(
+            "%s %s [%s] %s\n",
+            Yii::$app->formatter->asDatetime(time()),
+            self::formatBytes(memory_get_usage(true)),
+            mb_strtolower(Logger::getLevelName($level)),
+            $message
+        );
+    }
+
+    /**
+     * @param integer $bytes
+     *
+     * @return string
+     */
+    private static function formatBytes(int $bytes) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, 2) . $units[$pow];
+    }
+
 }
