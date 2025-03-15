@@ -273,7 +273,7 @@ class Task extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'command'], 'required'],
+            [['name', 'command_class'], 'required'],
             [['command', 'command_params', 'period', 'time_start', 'date_start', 'last_run_at', 'director_pid', 'manager_pid', 'execution_time', 'created_at', 'updated_at'], 'safe'],
             [['priority', 'status', 'schedule_type', 'pid', 'execution_time'], 'default', 'value' => null],
             [['max_execution_time', 'launch_count', 'max_restarts_count'], 'default', 'value' => 0],

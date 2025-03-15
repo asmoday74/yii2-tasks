@@ -82,7 +82,7 @@ class ListController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Task();
+        $model = new Task(['scenario' => Task::SCENARIO_EDIT_GUI]);
 
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -136,6 +136,8 @@ class ListController extends Controller
             } else {
                 $model = new Task();
             }
+
+            $model->scenario = Task::SCENARIO_EDIT_GUI;
 
             if ($model->load(Yii::$app->request->post())) {
                 Yii::$app->response->format = Response::FORMAT_JSON;
