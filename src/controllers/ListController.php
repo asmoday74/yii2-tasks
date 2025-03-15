@@ -2,6 +2,7 @@
 
 namespace asmoday74\tasks\controllers;
 
+use Codeception\Module\Yii2;
 use Yii;
 use asmoday74\tasks\models\Task;
 use yii\data\ActiveDataProvider;
@@ -117,7 +118,7 @@ class ListController extends Controller
 
             Yii::$app->response->format = Response::FORMAT_JSON;
             if ($model->save()) {
-                return json_encode(['status' => 'ok','message' => 'Задание успешно сохранено!']);
+                return ['status' => 'ok','message' => Yii::t('tasks', 'The task is successfully saved!')];
             } else {
                 return ActiveForm::validate($model);
             }
