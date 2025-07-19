@@ -88,7 +88,7 @@ class ListController extends Controller
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['index']);
             } else {
                 return ActiveForm::validate($model);
             }

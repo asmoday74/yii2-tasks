@@ -70,7 +70,7 @@ class RunController extends Controller
                     if ($this->one) {
                         break;
                     }
-                    sleep(1);
+                    sleep($this->_taskModule->sleepTime);
                     continue;
                 }
 
@@ -103,6 +103,8 @@ class RunController extends Controller
                 if ($this->one) {
                     break;
                 }
+
+                sleep(5);
             } catch (\Exception $e) {
                 $this->log(
                     Yii::t("tasks", "An error occurred while executing the task: \n{0}", $e->getMessage()),
@@ -236,13 +238,23 @@ class RunController extends Controller
                     $this->log(
                         Yii::t("tasks", "Task completed successfully. Time spent: {n, duration}", ['n' => $executionTime])
                     );
+
+                    if ($this->_taskModule->deleteSuccessfulComplete && $taskInfo->schedule_type == Task::TASK_PERIODIC_TYPE_ONCE) {
+                        $taskInfo->delete();
+                    }
+
                     return true;
                 } else {
                     $taskInfo->status = Task::TASK_STATUS_UNSUCCESSFULLY;
 
                     $this->log(
-                        Yii::t("tasks", "The task completed with errors. Time spent: {n, duration}", ['n' => $executionTime])
+                        Yii::t("tasks", "The task ended with errors. Time spent: {n, duration}", ['n' => $executionTime])
                     );
+
+                    if ($this->_taskModule->deleteErrorTask && $taskInfo->max_restarts_count != 0 && $taskInfo->launch_count >= $taskInfo->max_restarts_count) {
+                        $taskInfo->delete();
+                    }
+
                     return false;
                 }
             } catch (\Exception $e) {
@@ -340,13 +352,16 @@ class RunController extends Controller
                     $error_type = Logger::LEVEL_WARNING;
                     break;
                 default:
-                    $error_type = Logger::LEVEL_TRACE;
+                    $error_type = false;
                     break;
             }
-            $this->log(
-                "Error: " . $error['message'] . " Line:" . $error['line'] . " File:" . $error['file'],
-                $error_type
-            );
+
+            if ($error_type !== false) {
+                $this->log(
+                    "Error: " . $error['message'] . " Line:" . $error['line'] . " File:" . $error['file'],
+                    $error_type
+                );
+            }
         }
     }
 
@@ -360,9 +375,9 @@ class RunController extends Controller
     {
         if ($this->showLog) {
             if ($taskID) {
-                TaskHelper::printLog('[taskID: ' . $taskID . ']' . $message, $level);
+                TaskHelper::printLog('[taskID: ' . $taskID . '] ' . $message, $level);
             } else {
-                TaskHelper::printLog('[taskID: ' . $this->taskID . ']' . $message, $level);
+                TaskHelper::printLog('[taskID: ' . $this->taskID . '] ' . $message, $level);
             }
         }
         if ($taskID) {

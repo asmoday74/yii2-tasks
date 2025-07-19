@@ -34,17 +34,40 @@ class Module extends \yii\base\Module
 
     /**
      * @var int, maximum execution time of the director of the tasks
+     * Default: 60 seconds
      */
-    public int $maxExecutionTimeDirector = 10;
+    public int $maxExecutionTimeDirector = 60;
     /**
      * @var int, maximum task execution time.
      * This value has priority in relation to the value established in the task itself.
+     * Default: 600 seconds
      */
     public int $maxExecutionTimeWorker = 600;
     /**
      * @var int, the minimum time before the restart
+     * Default: 60 seconds
      */
     public int $minTimeRestart = 60;
+    /**
+     * @var int, waiting time if there are no tasks, in seconds
+     * Default: 1 second
+     */
+    public int $sleepTime = 1;
+    /**
+     * @var bool, delete the task from the list after successful execution
+     * Default: true
+     */
+    public bool $deleteSuccessfulComplete = true;
+    /**
+     * @var bool, delete the task from the list after the end of attempts to execute
+     * * Default: true
+     */
+    public bool $deleteErrorTask = true;
+    /**
+     * @var int, the number of restart of the default task in case of error
+     * Default: 0 (infinity)
+     */
+    public int $defaultMaxRestartCount = 0;
 
     /**
      * {@inheritDoc}

@@ -88,7 +88,7 @@ class Task extends \yii\db\ActiveRecord
         $scenarios = parent::scenarios();
         $scenarios[self::SCENARIO_EDIT_GUI] = [
             'name', 'command_class', 'command_params', 'period', 'time_launch', 'day_launch',
-            'time_start', 'date_start', 'schedule_type', 'max_execution_time', 'max_restarts_count'
+            'time_start', 'date_start', 'schedule_type', 'max_execution_time', 'max_restarts_count', 'priority'
 
         ];
         $scenarios[self::SCENARIO_DEFAULT] = ['status', 'max_execution_time', 'launch_count', 'director_pid', 'manager_pid', 'last_run_at', 'execution_time'];
@@ -244,7 +244,11 @@ class Task extends \yii\db\ActiveRecord
 
         switch ($this->schedule_type) {
             case self::TASK_PERIODIC_TYPE_ONCE:
-                if ($this->isNewRecord) {
+                if (($this->scenario == self::SCENARIO_DEFAULT)) {
+                    if (($this->isNewRecord) && ($this->time_launch === true)) {
+                        $this->time_launch = '00:00:01';
+                    }
+                } else {
                     $this->time_launch = new Expression("('$this->date_start $this->time_start' - NOW())");
                 }
                 break;

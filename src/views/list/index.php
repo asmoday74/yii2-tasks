@@ -19,11 +19,12 @@ $this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
         'size' => 'modal-xl',
         'cancel' => Yii::t("tasks","Cancel"),
         'submit' => Yii::t("tasks","Save"),
+        'pjax-container' => 'task-index'
     ]
 ]);
 ?>
 <div class="task-index">
-    <?php Pjax::begin(); ?>
+    <?php Pjax::begin(['id' => 'task-index']); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -101,6 +102,7 @@ $this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
                                 'size' => 'modal-xl',
                                 'cancel' => Yii::t("tasks","Cancel"),
                                 'submit' => Yii::t("tasks","Save"),
+                                'pjax-container' => 'task-index'
                             ],
                             'class' => 'modal-edit-toggle'
                         ]);
@@ -110,6 +112,7 @@ $this->params['actions'][] = Html::a(Yii::t("tasks","Create task"), null, [
                             'title' => Yii::t("tasks", "Delete"),
                             'data' => [
                                 'confirm' => Yii::t("tasks", "Are you sure you want to delete this item?"),
+                                'method' => 'post',
                             ],
                         ]);
                     },
