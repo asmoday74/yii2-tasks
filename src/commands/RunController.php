@@ -216,6 +216,7 @@ class RunController extends Controller
                             throw new \Exception(Yii::t("tasks", "The task was terminated due to a timeout"));
                         }
                         $worker_pid_status = pcntl_waitpid($worker_pid, $worker_status, WNOHANG);
+                        sleep(1);
                     }
                     $worker_status = pcntl_wexitstatus($worker_status);
                 } else {
