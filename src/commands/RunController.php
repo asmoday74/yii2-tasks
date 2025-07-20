@@ -242,6 +242,7 @@ class RunController extends Controller
 
                     if ($this->_taskModule->deleteSuccessfulComplete && $taskInfo->schedule_type == Task::TASK_PERIODIC_TYPE_ONCE) {
                         $taskInfo->delete();
+                        unset($taskInfo);
                     }
 
                     return true;
@@ -254,6 +255,7 @@ class RunController extends Controller
 
                     if ($this->_taskModule->deleteErrorTask && $taskInfo->max_restarts_count != 0 && $taskInfo->launch_count >= $taskInfo->max_restarts_count) {
                         $taskInfo->delete();
+                        unset($taskInfo);
                     }
 
                     return false;
@@ -266,9 +268,11 @@ class RunController extends Controller
                 );
                 return false;
             } finally {
-                $taskInfo->director_pid = null;
-                $taskInfo->manager_pid = null;
-                $taskInfo->save();
+                if (isset($taskInfo)) {
+                    $taskInfo->director_pid = null;
+                    $taskInfo->manager_pid = null;
+                    $taskInfo->save();
+                }
             }
         } catch (\Exception $e) {
             $this->log(

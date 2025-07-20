@@ -31,9 +31,9 @@ class TaskHelper
                 WHERE id = (
                     SELECT id
                     FROM " . Task::getTableSchema()->fullName . "
-                    WHERE (((status = :status_waiting) OR (status = :status_canceled) OR ((status = :status_unsuccessfully) AND (updated_at + :min_time_restart < NOW()) AND ((max_restarts_count = 0) OR (max_restarts_count < launch_count)))) AND (
+                    WHERE (((status = :status_waiting) OR (status = :status_canceled) OR ((status = :status_unsuccessfully) AND (updated_at + (:min_time_restart)::INTERVAL < NOW()) AND ((max_restarts_count = 0) OR (max_restarts_count < launch_count)))) AND (
                         (((updated_at + time_launch) < NOW()) AND (schedule_type = :schedule_type_once)) OR
-                        ((time_launch < LOCALTIME) AND (schedule_type = :schedule_type_once_day)) OR
+                        ((time_launch < LOCALTIME) AND ((last_run_at is null) OR (DATE(last_run_at) < CURRENT_DATE)) AND (schedule_type = :schedule_type_once_day)) OR
                         ((((time_launch + last_run_at) < NOW()) OR (last_run_at IS NULL)) AND (schedule_type = :schedule_type_several_day)) OR
                         (((time_launch < LOCALTIME) AND (EXTRACT(ISODOW FROM now())::INT = ANY(day_launch))) AND (DATE(last_run_at) < CURRENT_DATE) AND (schedule_type = :schedule_type_once_day_weekly)) OR
                         (((((time_launch + last_run_at) < NOW()) OR (last_run_at IS NULL)) AND (EXTRACT(ISODOW FROM now())::INT = ANY(day_launch))) AND (schedule_type = :schedule_type_several_day_weekly))
@@ -44,7 +44,7 @@ class TaskHelper
                 )
                 RETURNING id",[
                 ':director_pid' => $director_pid,
-                'min_time_restart' => $min_time_restart,
+                ':min_time_restart' => $min_time_restart,
                 ':status_queue' => Task::TASK_STATUS_QUEUE,
                 ':status_waiting' => Task::TASK_STATUS_WAITING,
                 ':status_canceled' => Task::TASK_STATUS_CANCELED,

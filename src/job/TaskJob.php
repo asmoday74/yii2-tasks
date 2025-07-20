@@ -4,7 +4,6 @@ namespace asmoday74\tasks\job;
 
 use asmoday74\tasks\helpers\TaskHelper;
 use asmoday74\tasks\Module;
-use asmoday74\tasks\Module as TaskModule;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
@@ -17,7 +16,7 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
     public array $params;
     public int $id;
     public bool $showLog = false;
-    private TaskModule $_taskModule;
+    private \yii\base\Module $_taskModule;
 
     /**
      * @param array $config
@@ -27,7 +26,23 @@ abstract class TaskJob extends BaseObject implements TaskJobInterface
      */
     public function __construct($config = [])
     {
-        $this->_taskModule = TaskModule::getInstance();
+        $module = Module::getInstance();
+        if ($module) {
+            $this->_taskModule = Module::getInstance();
+        } else {
+            $modules = \Yii::$app->getModules();
+            foreach ($modules as $moduleName => $moduleConfig) {
+                if ((is_object($moduleConfig) && $moduleConfig->class == Module::class) || (is_array($moduleConfig) && $moduleConfig['class'] == Module::class)) {
+                    $this->_taskModule = \Yii::$app->getModule($moduleName);
+                    break;
+                }
+            }
+        }
+
+        if (!$this->_taskModule) {
+            throw new Exception('Module asmoday74\tasks\Module from is not registered in the system. Register the module!');
+        }
+
         if (!ArrayHelper::keyExists('id',$config)) {
             $reflection = new \ReflectionClass($this);
             $task = new Task([

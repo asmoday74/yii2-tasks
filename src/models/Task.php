@@ -2,13 +2,12 @@
 
 namespace asmoday74\tasks\models;
 
-use asmoday74\tasks\Module as TaskModule;
+use DateTimeZone;
 use Yii;
 use yii\behaviors\AttributeBehavior;
 use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use asmoday74\tasks\Module;
 
 /**
  * This is the model class for table "task".
@@ -108,6 +107,7 @@ class Task extends \yii\db\ActiveRecord
                         if ($this->command) {
                             return json_encode(ArrayHelper::getValue($this->command, 'params', []));
                         }
+                        return null;
                     },
                 ],
                 [
@@ -119,6 +119,7 @@ class Task extends \yii\db\ActiveRecord
                         if ($this->command) {
                             return ArrayHelper::getValue($this->command, 'command', '');
                         }
+                        return null;
                     },
                 ],
                 [
@@ -127,7 +128,7 @@ class Task extends \yii\db\ActiveRecord
                         yii\db\BaseActiveRecord::EVENT_INIT => 'date_start',
                     ],
                     'value' => function ($event) {
-                        $datetime = new \DateTime();
+                        $datetime = new \DateTime("NOW", new DateTimeZone('UTC'));
                         return $datetime->format('Y-m-d');
                     },
                 ],
@@ -138,7 +139,7 @@ class Task extends \yii\db\ActiveRecord
                     ],
                     'value' => function ($event) {
                         if (($this->updated_at) && ($this->schedule_type == self::TASK_PERIODIC_TYPE_ONCE)) {
-                            $datetime = new \DateTime($this->updated_at);
+                            $datetime = new \DateTime($this->updated_at, new DateTimeZone('UTC'));
                             $this->modifyDate($datetime, $this->time_launch);
                             return $datetime->format('Y-m-d');
                         } else {
@@ -152,9 +153,8 @@ class Task extends \yii\db\ActiveRecord
                         yii\db\BaseActiveRecord::EVENT_INIT => 'time_start',
                     ],
                     'value' => function ($event) {
-                        $datetime = new \DateTime();
-                        $datetime->modify('+1 hour');
-                        return $datetime->format('H:i');
+                        $datetime = new \DateTime("NOW", new DateTimeZone('UTC'));
+                        return Yii::$app->formatter->asTime($datetime, 'HH:mm');
                     },
                 ],
                 [
@@ -165,25 +165,26 @@ class Task extends \yii\db\ActiveRecord
                     'value' => function ($event) {
                         switch ($this->schedule_type) {
                             case self::TASK_PERIODIC_TYPE_ONCE:
-                                if ((!$this->isNewRecord) && ($this->updated_at) && ($this->time_launch)) {
-                                    $datetime = new \DateTime($this->updated_at);
+                                if ($this->updated_at && $this->time_launch) {
+                                    $datetime = new \DateTime($this->updated_at, new DateTimeZone('UTC'));
                                     $this->modifyDate($datetime, $this->time_launch);
                                 } elseif (!empty($this->time_start)) {
-                                    $datetime = new \DateTime($this->time_start);
+                                    $datetime = new \DateTime($this->time_start, new DateTimeZone('UTC'));
                                 }
                                 break;
                             case self::TASK_PERIODIC_TYPE_ONCE_DAY:
                             case self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY:
                                 if ($this->time_launch) {
-                                    $datetime = new \DateTime($this->time_launch);
+                                    $datetime = new \DateTime($this->time_launch, new DateTimeZone('UTC'));
                                 }
                                 break;
                         }
-                        if (!isset($datetime)) {
-                            $datetime = new \DateTime();
-                            $datetime->modify('+1 hour');
+                        if (isset($datetime)) {
+                            return Yii::$app->formatter->asTime($datetime, 'HH:mm');
+                        } else {
+                            return null;
                         }
-                        return $datetime->format('H:i');
+
                     },
                 ],
                 [
@@ -192,7 +193,7 @@ class Task extends \yii\db\ActiveRecord
                         yii\db\BaseActiveRecord::EVENT_INIT => 'period',
                     ],
                     'value' => function ($event) {
-                        return '00:00:01';
+                        return '01:00:00';
                     },
                 ],
                 [
@@ -204,8 +205,10 @@ class Task extends \yii\db\ActiveRecord
                         if (($this->time_launch) && (($this->schedule_type == self::TASK_PERIODIC_TYPE_SEVERAL_DAY) || ($this->schedule_type == self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY))) {
                             $datetime = new \DateTime($this->time_launch);
                             return $datetime->format('H:i:s');
+                        } elseif ($this->scenario == self::SCENARIO_EDIT_GUI) {
+                            return '01:00:00';
                         } else {
-                            return '00:00:01';
+                            return null;
                         }
                     },
                 ],
@@ -244,21 +247,25 @@ class Task extends \yii\db\ActiveRecord
 
         switch ($this->schedule_type) {
             case self::TASK_PERIODIC_TYPE_ONCE:
-                if (($this->scenario == self::SCENARIO_DEFAULT)) {
-                    if (($this->isNewRecord) && ($this->time_launch === true)) {
-                        $this->time_launch = '00:00:01';
-                    }
-                } else {
-                    $this->time_launch = new Expression("('$this->date_start $this->time_start' - NOW())");
+                if ($this->date_start && $this->time_start) {
+                    $utcDateTime = new \DateTime("$this->date_start $this->time_start", new DateTimeZone(Yii::$app->timezone->name));
+                    $utcDateTime->setTimezone(new DateTimeZone('UTC'));
+                    $this->time_launch = new Expression("('" . $utcDateTime->format('Y-m-d H:i:s') . "' - NOW())");
                 }
                 break;
             case self::TASK_PERIODIC_TYPE_ONCE_DAY:
             case self::TASK_PERIODIC_TYPE_ONCE_DAY_WEEKLY:
-                $this->time_launch = $this->time_start;
+                if ($this->time_start) {
+                    $utcDateTime = new \DateTime("$this->date_start $this->time_start", new DateTimeZone(Yii::$app->timezone->name));
+                    $utcDateTime->setTimezone(new DateTimeZone('UTC'));
+                    $this->time_launch = $utcDateTime->format('H:i');
+                }
                 break;
             case self::TASK_PERIODIC_TYPE_SEVERAL_DAY:
             case self::TASK_PERIODIC_TYPE_SEVERAL_DAY_WEEKLY:
-                $this->time_launch = $this->period;
+                if ($this->period) {
+                    $this->time_launch = $this->period;
+                }
                 break;
         }
 
