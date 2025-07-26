@@ -198,7 +198,7 @@ class RunController extends Controller
             }
 
             $taskInfo = Task::find()
-                ->select(['id', 'max_execution_time', 'schedule_type', 'status', 'launch_count', 'execution_time'])
+                ->select(['id', 'max_execution_time', 'max_restarts_count', 'schedule_type', 'status', 'launch_count', 'execution_time'])
                 ->where(['id' => $this->taskID])
                 ->one();
 
@@ -253,6 +253,8 @@ class RunController extends Controller
                         Yii::t("tasks", "The task ended with errors. Time spent: {n, duration}", ['n' => $executionTime])
                     );
 
+                    $a= $this->_taskModule->deleteErrorTask;
+
                     if ($this->_taskModule->deleteErrorTask && $taskInfo->max_restarts_count != 0 && $taskInfo->launch_count >= $taskInfo->max_restarts_count) {
                         $taskInfo->delete();
                         unset($taskInfo);
@@ -295,7 +297,8 @@ class RunController extends Controller
         try {
             $taskInfo = Task::findOne($this->taskID);
             if (!mb_strpos($taskInfo->command_class, '\\')) {
-                $taskInfo->command_class = $this->_taskModule->jobsPath . '\\' . $taskInfo->command_class;
+                $jobPath = str_replace(['/','@'], ['\\',''], $this->_taskModule->jobsPath);
+                $taskInfo->command_class = $jobPath . '\\' . $taskInfo->command_class;
             }
             $taskParams = [
                 'class' => $taskInfo->command_class,
@@ -378,17 +381,15 @@ class RunController extends Controller
      */
     public function log(string $message, int $level = Logger::LEVEL_INFO, int  $taskID = null)
     {
-        if ($this->showLog) {
-            if ($taskID) {
-                TaskHelper::printLog('[taskID: ' . $taskID . '] ' . $message, $level);
-            } else {
-                TaskHelper::printLog('[taskID: ' . $this->taskID . '] ' . $message, $level);
-            }
+        if (!$taskID && $this->taskID) {
+            $taskID = $this->taskID;
         }
+
         if ($taskID) {
             TaskModule::log($taskID, $message, $level);
+            TaskHelper::printLog("[taskID:$taskID]\t" . $message, $level);
         } else {
-            TaskModule::log($this->taskID, $message, $level);
+            TaskHelper::printLog($message, $level);
         }
     }
 

@@ -108,11 +108,14 @@ class Module extends \yii\base\Module
      */
     public static function log(int $taskID, string $message, int $level = Logger::LEVEL_INFO)
     {
+        if ($taskID) {
+            $message = "[taskID: $taskID]\t" . $message;
+        }
+
         Yii::getLogger()->log(
-            '[' . $taskID . '] ' . $message,
+            $message,
             $level,
             get_called_class()
         );
     }
-
 }

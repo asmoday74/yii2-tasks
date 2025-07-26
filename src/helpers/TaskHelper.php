@@ -31,7 +31,7 @@ class TaskHelper
                 WHERE id = (
                     SELECT id
                     FROM " . Task::getTableSchema()->fullName . "
-                    WHERE (((status = :status_waiting) OR (status = :status_canceled) OR ((status = :status_unsuccessfully) AND (updated_at + (:min_time_restart)::INTERVAL < NOW()) AND ((max_restarts_count = 0) OR (max_restarts_count < launch_count)))) AND (
+                    WHERE (((status = :status_waiting) OR (status = :status_canceled) OR ((status = :status_unsuccessfully) AND (updated_at + (:min_time_restart)::INTERVAL < NOW()) AND ((max_restarts_count = 0) OR (launch_count < max_restarts_count)))) AND (
                         (((updated_at + time_launch) < NOW()) AND (schedule_type = :schedule_type_once)) OR
                         ((time_launch < LOCALTIME) AND ((last_run_at is null) OR (DATE(last_run_at) < CURRENT_DATE)) AND (schedule_type = :schedule_type_once_day)) OR
                         ((((time_launch + last_run_at) < NOW()) OR (last_run_at IS NULL)) AND (schedule_type = :schedule_type_several_day)) OR
@@ -121,7 +121,7 @@ class TaskHelper
     public static function printLog(string $message, int $level = Logger::LEVEL_INFO)
     {
         echo sprintf(
-            "%s %s [%s] %s\n",
+            "%s\t%s\t[%s]\t%s\n",
             Yii::$app->formatter->asDatetime(time()),
             self::formatBytes(memory_get_usage(true)),
             mb_strtolower(Logger::getLevelName($level)),
